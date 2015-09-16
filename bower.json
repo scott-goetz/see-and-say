@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "dependencies": {},
   "devDependencies": {
-    "gsap": "~1.18.0"
+    "gsap": "~1.18.0",
+    "jquery": "~2.1.4",
+    "jquery-ui": "~1.11.4",
   }
 }

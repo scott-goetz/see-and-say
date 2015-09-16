@@ -1,56 +1,99 @@
-#see-say {
-	width: 500px;
-	height: 500px;
-	border: 1px solid #ddd;
-	margin: 0 auto;
+$lever-transform-origin: 0 100%;
+
+html, body {
+	height: 100%;
+	margin: 0;
 }
 
-#see-say .handle {
-	background: #e4b102;
-}
-
-#see-say .base {
+.container {
 	width: 100%;
 	height: 100%;
-	background: #587fd1;
-	border-radius: 9999px;
-	position: relative;
-	z-index: 0;
+	background: #000;
 }
 
-#see-say .base .arrow {
-	width: 100px;
-	height: 100px;
-	background: #fff;
-	border-radius: 0 0 10px 10px;
+#see-and-say {
+	width: 500px;
+	height: 500px;
+	margin: 0 auto;
 	position: absolute;
 	top: 50%;
 	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
-	z-index: 10;
-}
 
-#see-say .base .arrow:before {
-	width: 0; 
-	height: 0; 
-	border-left: 50px solid transparent;
-	border-right: 50px solid transparent;
-	border-bottom: 50px solid #fff;
-	content: '';
-	position: absolute;
-	top: -50px;
-	left: 50%;
-	transform: translateX(-50%);
-}
+	.lever {
+		width: 40px;
+		height: 300px;
+		background: #e4b102;
+		position: absolute;
+		top: 25px;
+		right: 130px;
+		-ms-transform-origin: $lever-transform-origin;
+		-webkit-transform-origin: $lever-transform-origin;
+		transform-origin: $lever-transform-origin;
+		z-index: 1;
 
-#see-say .sounds {
-	width: 90%;
-	height: 90%;
-	background: rgba(0, 0, 0, 0.15);
-	border-radius: 9999px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 5;
+		.handle,
+		.ui-rotatable-handle {
+			width: 50px;
+			height: 50px;
+			background: #e4b102;
+			border: 1px solid red;
+			border-radius: 50px;
+			cursor: pointer;
+			position: absolute;
+			top: -25px;
+			left: 50%;
+			-ms-transform: translateX(-50%);
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+		}
+	}
+
+	.base {
+		width: 100%;
+		height: 100%;
+		background: #587fd1;
+		border-radius: 9999px;
+		position: relative;
+		z-index: 2;
+
+		.arrow {
+			width: 100px;
+			height: 100px;
+			background: #fff;
+			border-radius: 0 0 10px 10px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 10;
+
+			&:before {
+				width: 0; 
+				height: 0; 
+				border-left: 50px solid transparent;
+				border-right: 50px solid transparent;
+				border-bottom: 50px solid #fff;
+				content: '';
+				position: absolute;
+				top: -50px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+		}
+
+		.sounds {
+			width: 90%;
+			height: 90%;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 9999px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 5;
+		}
+	}
 }

@@ -3,7 +3,8 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')({ camelize: true });
 
-var merge = require('merge-stream');
+var browserSync = require('browser-sync'),
+	merge = require('merge-stream');
 
 var config = require('./config.js'),
 	configData = config.getData();
@@ -17,7 +18,7 @@ gulp.task('scripts', function () {
 
 		var pipeline = gulp.src(currScripts)
 			.pipe($.concat(i + '.js'))
-			.pipe($.uglify({ preserveComments: 'license' }))
+			// .pipe($.uglify({ preserveComments: 'license' }))
 			.pipe($.rename({ suffix: '.min' }))
 			.pipe(gulp.dest('src/js/'));
 
