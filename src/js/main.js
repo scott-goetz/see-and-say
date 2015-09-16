@@ -14,11 +14,8 @@ $(function () {
 		$seeSayArrowEl = $seeSayBaseEl.find('.arrow'),
 		$seeSaySoundsEl = $seeSayBaseEl.find('.sounds');
 
-	var leverAngle,
-		leverStyles,
+	var leverOrigAngle,
 		divisionDegrees;
-
-	var isDragging = false;
 
 	var soundsArr = [
 		'Yoda', 'Admiral Ackbar', 'Darth Vader', 'Lightsaber', 'Tie Fighter', 'R2D2', 'Jabba The Hut', 'Princess Leia', 'Cantina Band', 'Han Solo'
@@ -27,8 +24,8 @@ $(function () {
 	var leverDraggableParams = {
 		angle: options.leverStartRotation,
 		start: function(event, ui) {
-			// Capture default styles for reset
-			leverStyles = $(this).attr('style');
+			// Capture original lever angle
+			leverOrigAngle = getRotation($seeSayLeverEl);
 		},
 		rotate: function(event, ui) {
 			// Stop the lever at a certain point
@@ -38,20 +35,36 @@ $(function () {
 		},
 		stop: function(event, ui) {
 			var timeDiff = Math.floor(((ui.angle.current - options.leverStartRotation) / (options.leverMaxRotation - options.leverStartRotation)) * 100) / 100,
-				timeCalc = options.playTime * timeDiff,
-				arrowRotation = (timeCalc * options.arrowRotationsPerSecond) * 360;
+				duration = options.playTime * timeDiff,
+				arrowRotation = (duration * options.arrowRotationsPerSecond) * 360;
 
 			// Play appropriate sound
 			playSound();
 
 			// Lever reset and arrow rotation
-			resetLever(timeCalc);
-			rotateArrow(timeCalc, arrowRotation);
+			resetLever(duration);
+			rotateArrow(duration, arrowRotation);
 		},
 		rotationCenterX: 50.0,
-		rotationCenterY: 100.0,
-		wheelRotate: false
+		rotationCenterY: 100.0
 	};
+
+	/**
+	 * Primary initialization call.
+	 */
+	function init () {
+		// Set some variables
+		divisionDegrees = 360 / soundsArr.length;
+
+		attach();		 
+	};
+
+	/**
+	 * Primary attach call.
+	 */
+	function attach () {
+		$seeSayLeverEl.draggable({ handle: '.ui-rotatable-handle' }).rotatable(leverDraggableParams);
+	}
 
 	/**
 	 * Determine the rotation, in degrees, of a specified object.
@@ -84,32 +97,40 @@ $(function () {
 		console.log(soundsArr[soundIndex]);
 	}
 
+	/**
+	 * Reset the lever position over time.
+	 * @param  {Int} duration The time it takes to reset the lever.
+	 */
 	function resetLever (duration) {
-		TweenMax.to($seeSayLeverEl, duration, {
-			css: { rotation: options.leverStartRotation },
-			// ease: Power3.easeOut,
-			onComplete: function () {
-				
+		// Disable rotatable functionality temporarily
+		$seeSayLeverEl.rotatable('destroy');
+
+		// Animate leve back into position
+		TweenMax.fromTo($seeSayLeverEl, duration, {
+				rotation: getRotation($seeSayLeverEl),				
+			},
+			{
+				rotation: leverOrigAngle,
+				// ease: Power3.easeOut
+				onComplete: function () {
+					console.log('manual reset');
+					$seeSayLeverEl.removeAttr('style').rotatable(leverDraggableParams);
+				}
 			}
-		});
+		);
 	}
 
+	/**
+	 * Spin the arrow to it's new position.
+	 * @param  {Int} duration The time it takes to spin the arrow.
+	 * @param  {Int} degrees  The amount, in degrees, to spin the arrow.
+	 */
 	function rotateArrow (duration, degrees) {
 		TweenMax.to($seeSayArrowEl, duration, {
 			css: { rotation: '+= ' + degrees + '_cw' }
 			// ease: Power3.easeOut
 		});
 	}
-
-	function attach () {
-		$seeSayLeverEl.draggable({ handle: '.ui-rotatable-handle' }).rotatable(leverDraggableParams);
-	}
-
-	function init () {
-		divisionDegrees = 360 / soundsArr.length;
-
-		attach();		 
-	};
 
 	init();
 });

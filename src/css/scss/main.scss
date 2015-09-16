@@ -38,16 +38,24 @@ html, body {
 		.ui-rotatable-handle {
 			width: 50px;
 			height: 50px;
-			background: #e4b102;
-			border: 1px solid red;
 			border-radius: 50px;
-			cursor: pointer;
 			position: absolute;
 			top: -25px;
 			left: 50%;
 			-ms-transform: translateX(-50%);
 			-webkit-transform: translateX(-50%);
 			transform: translateX(-50%);
+			z-index: 1;
+		}
+
+		.handle {
+			background: #e4b102;
+			border: 1px solid red;
+		}
+
+		.ui-rotatable-handle {
+			cursor: pointer;
+			z-index: 2;
 		}
 	}
 
