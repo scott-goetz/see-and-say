@@ -1,6 +1,8 @@
 $(function () {
 	var options = {
-		'arrowRotationsPerSecond': 2,
+		'arrowRotationsPerSecond': 1.5,
+		'audioFormat': 'mp3',
+		'audioPath': 'media/audio/',
 		'leverStartRotation': 19.25,
 		'leverMaxRotation': 20,
 		'playTime': 7,
@@ -12,18 +14,33 @@ $(function () {
 		$seeSayHandleEl = $seeSayLeverEl.find('.handle'),
 		$seeSayBaseEl = $seeSayEl.find('.base'),
 		$seeSayArrowEl = $seeSayBaseEl.find('.arrow'),
-		$seeSaySoundsEl = $seeSayBaseEl.find('.sounds');
+		$seeSaySoundsEl = $seeSayBaseEl.find('.sound-base'),
+		$seeSayPlayback = $seeSayEl.find('audio.playback');
 
-	var leverOrigAngle,
+	var arrowRotationAmount,
+		audioDuration,
+		leverOrigAngle,
+		resetDuration,
 		divisionDegrees;
 
-	var soundsArr = [
-		'Yoda', 'Admiral Ackbar', 'Darth Vader', 'Lightsaber', 'Tie Fighter', 'R2D2', 'Jabba The Hut', 'Princess Leia', 'Cantina Band', 'Han Solo'
-	];
+	var isReady = false;
+
+	// var soundsArr = ['Yoda', 'Admiral Ackbar', 'Darth Vader', 'Lightsaber', 'Tie Fighter', 'R2D2', 'Jabba The Hut', 'Princess Leia', 'Cantina Band', 'Han Solo'];
+
+	var soundsArr = ['goldblum-1', 'goldblum-2', 'goldblum-3', 'goldblum-4', 'goldblum-5', 'goldblum-6', 'goldblum-7', 'goldblum-8', 'goldblum-9', 'goldblum-10'];
+
+	var arrowDraggableParams = {
+		rotationCenterX: 50.0,
+		rotationCenterY: 50.0
+	};
 
 	var leverDraggableParams = {
 		angle: options.leverStartRotation,
 		start: function(event, ui) {
+			if (!isReady) {
+				isReady = true;
+			}
+
 			// Capture original lever angle
 			leverOrigAngle = getRotation($seeSayLeverEl);
 		},
@@ -34,16 +51,12 @@ $(function () {
 			}
 		},
 		stop: function(event, ui) {
-			var timeDiff = Math.floor(((ui.angle.current - options.leverStartRotation) / (options.leverMaxRotation - options.leverStartRotation)) * 100) / 100,
-				duration = options.playTime * timeDiff,
-				arrowRotation = (duration * options.arrowRotationsPerSecond) * 360;
+			// var timeDiff = Math.floor(((ui.angle.current - options.leverStartRotation) / (options.leverMaxRotation - options.leverStartRotation)) * 100) / 100;
 
-			// Play appropriate sound
-			playSound();
+			// resetDuration = options.playTime * timeDiff;
 
-			// Lever reset and arrow rotation
-			resetLever(duration);
-			rotateArrow(duration, arrowRotation);
+			// Change new audio
+			audioUpdate(Math.floor(getRotation($seeSayArrowEl) / divisionDegrees));
 		},
 		rotationCenterX: 50.0,
 		rotationCenterY: 100.0
@@ -63,7 +76,25 @@ $(function () {
 	 * Primary attach call.
 	 */
 	function attach () {
+		// Attach rotatable
 		$seeSayLeverEl.draggable({ handle: '.ui-rotatable-handle' }).rotatable(leverDraggableParams);
+		$seeSayArrowEl.draggable({ handle: '.ui-rotatable-handle' }).rotatable(arrowDraggableParams);
+
+		// Audio element listeners
+		$seeSayPlayback.on('loadedmetadata', function (e) {
+			if (isReady) {
+				// Update audio duration and determine arrow spin time
+				audioDuration = $seeSayPlayback[0].duration;
+				arrowRotationAmount = (audioDuration * options.arrowRotationsPerSecond) * 360;
+
+				// Play appropriate sound
+				$seeSayPlayback[0].play();
+
+				// Lever reset and arrow rotation
+				resetLever(resetDuration);
+				rotateArrow(arrowRotationAmount);
+			}
+		});
 	}
 
 	/**
@@ -89,31 +120,31 @@ $(function () {
 	}
 
 	/**
-	 * Play the sound of whichever character/object the arrow is currently pointing at.
+	 * Play the audio of whichever character/object the arrow is currently pointing at.
 	 */
-	function playSound () {
-		var soundIndex = Math.floor(getRotation($seeSayArrowEl) / divisionDegrees);
+	function audioUpdate (soundIndex) {
+		var audioSrc = options.audioPath + soundsArr[soundIndex] + '.' + options.audioFormat;
 
-		console.log(soundsArr[soundIndex]);
+		// Swap audio source and play
+		$seeSayPlayback.attr('src', audioSrc);
 	}
 
 	/**
 	 * Reset the lever position over time.
-	 * @param  {Int} duration The time it takes to reset the lever.
 	 */
-	function resetLever (duration) {
+	function resetLever () {
 		// Disable rotatable functionality temporarily
 		$seeSayLeverEl.rotatable('destroy');
 
-		// Animate leve back into position
-		TweenMax.fromTo($seeSayLeverEl, duration, {
-				rotation: getRotation($seeSayLeverEl),				
+		// Animate lever back into position
+		TweenMax.fromTo($seeSayLeverEl, audioDuration, {
+				rotation: getRotation($seeSayLeverEl)
 			},
 			{
 				rotation: leverOrigAngle,
 				// ease: Power3.easeOut
 				onComplete: function () {
-					console.log('manual reset');
+					// Reset rotatable
 					$seeSayLeverEl.removeAttr('style').rotatable(leverDraggableParams);
 				}
 			}
@@ -122,13 +153,24 @@ $(function () {
 
 	/**
 	 * Spin the arrow to it's new position.
-	 * @param  {Int} duration The time it takes to spin the arrow.
 	 * @param  {Int} degrees  The amount, in degrees, to spin the arrow.
 	 */
-	function rotateArrow (duration, degrees) {
-		TweenMax.to($seeSayArrowEl, duration, {
-			css: { rotation: '+= ' + degrees + '_cw' }
+	function rotateArrow (degrees) {
+		// Disable rotatable functionality temporarily
+		$seeSayArrowEl.rotatable('destroy');
+
+		var newArrowDraggableParams = arrowDraggableParams;
+
+		TweenMax.to($seeSayArrowEl, audioDuration, {
+			css: { rotation: '+= ' + degrees + '_cw' },
 			// ease: Power3.easeOut
+			onComplete: function () {
+				// Get new angle in radians based of current rotation
+				newArrowDraggableParams.angle = getRotation($seeSayArrowEl) * Math.PI / 180;
+
+				// Reset rotatable
+				$seeSayArrowEl.removeAttr('style').rotatable(newArrowDraggableParams);
+			}
 		});
 	}
 
