@@ -5,16 +5,19 @@ html, body {
 	margin: 0;
 }
 
-.container {
-	width: 100%;
-	height: 100%;
+body {
 	background: #000;
 }
 
+.container {
+	width: 100%;
+	height: 100%;
+}
+
 #see-and-say {
-	width: 500px;
-	height: 500px;
-	margin: 0 auto;
+	width: 60%;
+	max-width: 745px;
+	margin: 0;
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -22,82 +25,73 @@ html, body {
 	-webkit-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 
-	.lever {
-		width: 40px;
-		height: 300px;
-		background: #e4b102;
+	.handle {
+		width: 15%;
+		height: 30%;
+		background: url(../media/images/handle.png) no-repeat 0 0;
+		background-size: 100%;
 		position: absolute;
-		top: 25px;
-		right: 130px;
+		top: 21%;
+		right: 13%;
 		-ms-transform-origin: $lever-transform-origin;
 		-webkit-transform-origin: $lever-transform-origin;
 		transform-origin: $lever-transform-origin;
 		z-index: 1;
 
-		.handle,
 		.ui-rotatable-handle {
-			width: 50px;
-			height: 50px;
-			border-radius: 50px;
+			width: 100%;
+			height: 100%;
+			cursor: pointer;
 			position: absolute;
-			top: -25px;
+			top: 0px;
 			left: 50%;
 			-ms-transform: translateX(-50%);
 			-webkit-transform: translateX(-50%);
 			transform: translateX(-50%);
-			z-index: 1;
+			z-index: 2;
 		}
-
-		.handle {
-			background: #e4b102;
-			border: 1px solid red;
-		}
-
+	}
+	
+	.arrow {
+		width: 16.5%;
+		height: 21.8%;
+		background: url(../media/images/arrow.png) no-repeat 0 0;
+		background-size: 100%;
+		border-radius: 0 0 10px 10px;
+		margin-top: -5.5%;
+		margin-left: -8.25%;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		z-index: 10;
+		
 		.ui-rotatable-handle {
 			cursor: pointer;
-			z-index: 2;
+			width: 100%;
+			height: 50%;
+			position: absolute;
+			top: 0;
+			left: 0;
 		}
 	}
 
 	.base {
 		width: 100%;
-		height: 100%;
 		background: #587fd1;
-		border-radius: 9999px;
+		background: url(../media/images/base.png) no-repeat 0 65%;
+		background-size: 90%;
+		padding: 14% 0 12%;
+		pointer-events: none;
 		position: relative;
 		z-index: 2;
 
-		.arrow {
-			width: 221px;
-			height: 307px;
-			background: url(../media/images/arrow.png) no-repeat 0 0;
-			border-radius: 0 0 10px 10px;
-			margin-top: -154px;
-			margin-left: -111px;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			z-index: 10;
-			
-			.ui-rotatable-handle {
-				cursor: pointer;
-				width: 100%;
-				height: 50%;
-				position: absolute;
-				top: 0;
-				left: 0;
-			}
-		}
-
-		.sound-base {
-			width: 90%;
-			height: 90%;
-			background: #deb326;
-			border-radius: 9999px;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+		.sound-ring {
+			width: 70%;
+			height: auto;
+			max-width: 520px;
+			display: block;
+			margin: 10% auto 0;
+			position: relative;
 			z-index: 5;
 		}
 	}
