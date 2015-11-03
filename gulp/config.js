@@ -5,6 +5,7 @@ var data = {};
 data.scripts = {
 	'vendor': [
 		'src/js/vendor/jquery/dist/jquery.min.js',
+		'src/js/vendor/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js',
 		'src/js/vendor/gsap/src/minified/plugins/CSSPlugin.min.js',
 		'src/js/vendor/gsap/src/minified/TweenMax.min.js',
 		'src/js/vendor/jquery-ui/jquery-ui.min.js',
