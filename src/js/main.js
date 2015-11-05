@@ -5,6 +5,8 @@ $(function () {
 		'audioPath': 'media/audio/',
 		'handleStartRotation': 19.25,
 		'handleMaxRotation': 21.14,
+		'instructionFade': 0.75,
+		'instructionIdleTime': 7500,
 		'playTime': 7,
 		'failAngle': 180,
 		'failMinCount': 2,
@@ -13,13 +15,21 @@ $(function () {
 
 	var $body = $('body'),
 		$seeSayEl = $('#see-and-say'),
+		$seeSayInstructionsEl = $seeSayEl.find('.instructions'),
+		$seeSayInstructionsPickEl = $seeSayInstructionsEl.find('.pick'),
+		$seeSayInstructionsPullEl = $seeSayInstructionsEl.find('.pull'),
+		$seeSayInstructionsPullHandEl = $seeSayInstructionsPullEl.find('.hand'),
 		$seeSayHandleEl = $seeSayEl.find('.handle'),
 		$seeSayBaseEl = $seeSayEl.find('.base'),
-		$seeSayArrowEl = $seeSayEl.find('.arrow'),
+		$seeSayArrowEl = $seeSayEl.find('> .arrow'),
 		$seeSaySoundsEl = $seeSayEl.find('.sound-ring'),
 		$seeSayPlayback = $seeSayEl.find('audio.playback'),
-		$seeSayEngineFailure = $seeSayEl.find('audio.engine-failure');
+		$seeSayEngineFailure = $seeSayEl.find('audio.engine-failure'),
+		$window = $(window);
 
+	var instructionTimeout;
+
+	// Prepare toy vars
 	var arrowRotationAmount,
 		audioDuration,
 		handleOrigAngle,
@@ -40,9 +50,16 @@ $(function () {
 		rotationCenterY: 50.0
 	};
 
+	var instructionAnimation = new TimelineMax({
+		delay: 0.5,
+		repeat: -1
+	});
+
 	var handleDraggableParams = {
 		angle: options.handleStartRotation,
 		start: function(event, ui) {
+			hideInstructions();
+
 			if (!isReady) {
 				isReady = true;
 			}
@@ -87,6 +104,18 @@ $(function () {
 		// Set some variables
 		divisionDegrees = 360 / soundsArr.length;
 
+		// Play instruction animation
+		instructionAnimation.set($seeSayInstructionsPullEl, { autoAlpha: 0 })
+			.set($seeSayInstructionsPickEl, { rotation: '180' })
+			.to($seeSayInstructionsPickEl, 1.5, { rotation: '+= 250_cw', transformOrigin:"50% 50%" })
+			.to($seeSayInstructionsPickEl, options.instructionFade, { autoAlpha: '0' })
+			.set($seeSayInstructionsPickEl, { rotation: '180' })
+			.to($seeSayInstructionsPullEl, options.instructionFade, { autoAlpha: 1 }, "-=0.25")
+			.to($seeSayInstructionsPullHandEl, 1, { y: 10 })
+			.to($seeSayInstructionsPullHandEl, 1, { y: 0 })
+			.to($seeSayInstructionsPullEl, options.instructionFade, { autoAlpha: 0 })
+			.to($seeSayInstructionsPickEl, options.instructionFade, { autoAlpha: 1 }, "-=0.25");
+
 		// Determine random engine failure
 		engineFailureCount = setEngineFailure(options.failMinCount, options.failMaxCount);
 		// engineFailureCount = 1;
@@ -118,6 +147,8 @@ $(function () {
 				rotateArrow(arrowRotationAmount, audioDuration);
 			}
 		});
+
+		$window.resize($.throttle(250, resize)).trigger('resize');
 	}
 
 	/**
@@ -194,6 +225,13 @@ $(function () {
 	}
 
 	/**
+	 * Window resize.
+	 */
+	function resize () {
+		
+	}
+
+	/**
 	 * Spin the arrow to it's new position.
 	 * @param  {Int} degrees  The amount, in degrees, to spin the arrow.
 	 */
@@ -212,12 +250,35 @@ $(function () {
 
 				// Reset rotatable
 				$seeSayArrowEl.removeAttr('style').rotatable(newArrowDraggableParams);
+
+				// Reset instruction timeout
+				instructionTimeout = setTimeout(showInstructions, options.instructionIdleTime);
 			}
 		});
 	}
 
 	function setEngineFailure (min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function hideInstructions () {
+		TweenMax.to($seeSayInstructionsEl, options.instructionFade, {
+				autoAlpha: 0
+			});
+	}
+
+	function showInstructions () {
+		clearTimeout(instructionTimeout);
+
+		// Prep instruction animation
+		instructionAnimation.restart().pause();
+
+		TweenMax.to($seeSayInstructionsEl, options.instructionFade, {
+				autoAlpha: 1,
+				onComplete: function () {
+					instructionAnimation.play();
+				}
+			});
 	}
 
 	init();
