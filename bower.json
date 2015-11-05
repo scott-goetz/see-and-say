@@ -6,6 +6,7 @@
     "gsap": "~1.18.0",
     "jquery": "~2.1.4",
     "jquery-ui": "~1.11.4",
-    "jquery-throttle-debounce": "*"
+    "jquery-throttle-debounce": "*",
+    "SoundJS": "~0.6.1"
   }
 }
