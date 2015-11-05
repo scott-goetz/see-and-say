@@ -26,9 +26,12 @@ this.seeAndSay = this.seeAndSay || {};
 			});
 
 			// Register misc sounds
-			createjs.Sound.registerSound(options.audioPath + 'engine-failiure.ogg', 'engine-failure');
+			createjs.Sound.registerSound({
+				src: options.audioPath + 'engine-failiure.ogg',
+				id: 'engine-failure'
+			});
 		}
-	}
+	};
 
 	seeAndSay.App = App;
 }());

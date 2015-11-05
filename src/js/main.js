@@ -150,6 +150,14 @@ function getRotation ($obj) {
 function hideInstructions () {
 	clearTimeout(instructionTimeout);
 
+	TweenMax.to($seeSayInstructionsEl, options.instructionFade, {
+		autoAlpha: 0
+	});
+}
+
+function showInstructions () {
+	clearTimeout(instructionTimeout);
+
 	// Prep instruction animation
 	instructionAnimation.restart().pause();
 
@@ -157,17 +165,7 @@ function hideInstructions () {
 		autoAlpha: 1,
 		onComplete: function () {
 			instructionAnimation.play();
-
-			console.log('asfda');
 		}
-	});
-}
-
-function showInstructions () {
-	clearTimeout(instructionTimeout);
-
-	TweenMax.to($seeSayInstructionsEl, options.instructionFade, {
-		autoAlpha: 0
 	});
 }
 
@@ -183,11 +181,11 @@ function audioUpdate (failure) {
 		pullCount = 0;
 		engineFailureCount = setEngineFailure(1, options.failMaxCount);
 
-		audioFile = 'engine-failiure';
+		audioFile = 'engine-failure';
 	} else {
 		audioFile = soundsArr[soundIndex];
 	}
-	
+
 	// Play audio track
 	var audioInstance = createjs.Sound.play(audioFile);
 
