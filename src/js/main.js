@@ -1,6 +1,7 @@
 var options = {
 	'arrowRotationsPerSecond': 1.5,
 	'audioPath': 'media/audio/',
+	'engineIdleState': 0.3,
 	'handleStartRotation': 19.25,
 	'handleMaxRotation': 21.14,
 	'instructionFade': 0.75,
@@ -20,6 +21,7 @@ var $body = $('body'),
 	$seeSayHandleEl = $seeSayEl.find('.handle'),
 	$seeSayBaseEl = $seeSayEl.find('.base'),
 	$seeSayArrowEl = $seeSayEl.find('> .arrow'),
+	$seeSayEngineGlowEl = $seeSayEl.find('.engine-glow'),
 	$seeSaySoundsEl = $seeSayEl.find('.sound-ring'),
 	$seeSayPlayback = $seeSayEl.find('audio.playback'),
 	$seeSayPlaybackM4A = $seeSayPlayback.find('source.playback-m4a'),
@@ -41,12 +43,15 @@ var pullCount = 0,
 	engineFailureCount = 0,
 	soundIndex = 0;
 
-var instructionTimeout;
+var engineTimeout,
+	instructionTimeout;
 
 var instructionAnimation = new TimelineMax({
 	delay: 0.5,
 	repeat: -1
 });
+
+var engineFailAnimation = new TimelineMax();
 
 var arrowDraggableParams = {
 	rotationCenterX: 50.0,
@@ -113,6 +118,34 @@ function init () {
 		.to($seeSayInstructionsPullEl, options.instructionFade, { autoAlpha: 0 })
 		.to($seeSayInstructionsPickEl, options.instructionFade, { autoAlpha: 1 }, "-=0.25");
 
+	// Engine failure animation
+	engineFailAnimation.set($seeSayEngineGlowEl, { autoAlpha: options.engineIdleState })
+		.to($seeSayEngineGlowEl, 0.4, { autoAlpha: 0.95 })
+		.to($seeSayEngineGlowEl, 0.271, { autoAlpha: 0.35 })
+		.to($seeSayEngineGlowEl, 0.035, { autoAlpha: 0.6 })
+		.to($seeSayEngineGlowEl, 0.03, { autoAlpha: 0.45 })
+		.to($seeSayEngineGlowEl, 0.07, { autoAlpha: 0.8 })
+		.to($seeSayEngineGlowEl, 0.246, { autoAlpha: 0.4 })
+		.to($seeSayEngineGlowEl, 0.145, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.125, { autoAlpha: 0.3 })
+		.to($seeSayEngineGlowEl, 0.215, { autoAlpha: 0.7 })
+		.to($seeSayEngineGlowEl, 0.205, { autoAlpha: 0.3 })
+		.to($seeSayEngineGlowEl, 0.09, { autoAlpha: 0.6 })
+		.to($seeSayEngineGlowEl, 0.25, { autoAlpha: 0.25 })
+		.to($seeSayEngineGlowEl, 0.125, { autoAlpha: 0.6 })
+		.to($seeSayEngineGlowEl, 0.175, { autoAlpha: 0.3 })
+		.to($seeSayEngineGlowEl, 0.15, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.14, { autoAlpha: 0.2 })
+		.to($seeSayEngineGlowEl, 0.05, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.165, { autoAlpha: 0.25 })
+		.to($seeSayEngineGlowEl, 0.15, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.170, { autoAlpha: 0.2 })
+		.to($seeSayEngineGlowEl, 0.15, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.095, { autoAlpha: 0.15 })
+		.to($seeSayEngineGlowEl, 0.110, { autoAlpha: 0.5 })
+		.to($seeSayEngineGlowEl, 0.5, { autoAlpha: 0.3 })
+		.pause();
+
 	// Determine random engine failure
 	engineFailureCount = setEngineFailure(options.failMinCount, options.failMaxCount);
 	// engineFailureCount = 1;
@@ -145,6 +178,20 @@ function getRotation ($obj) {
 	}
 
 	return (angle < 0) ? angle + 360 : angle;
+}
+
+function engine (duration) {
+	TweenMax.to($seeSayEngineGlowEl, 0.5, {
+		autoAlpha: 1,
+		ease: Power3.easeOut
+	});
+
+	setTimeout(function () {
+		TweenMax.to($seeSayEngineGlowEl, 0.5, {
+			autoAlpha: options.engineIdleState,
+			ease: Power3.easeOut
+		});
+	}, duration)
 }
 
 function hideInstructions () {
@@ -182,6 +229,7 @@ function audioUpdate (failure) {
 		engineFailureCount = setEngineFailure(1, options.failMaxCount);
 
 		audioFile = 'engine-failure';
+		engineFailAnimation.restart().play();
 	} else {
 		audioFile = soundsArr[soundIndex];
 	}
@@ -195,8 +243,8 @@ function audioUpdate (failure) {
 
 	// Lever reset and arrow rotation
 	resetHandle(audioDuration);
-
 	rotateArrow(arrowRotationAmount, audioDuration);
+	engine(audioDuration * 1000);
 }
 
 /**

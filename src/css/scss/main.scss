@@ -183,6 +183,19 @@ body {
 			left: 0;
 		}
 	}
+	
+	.engine-glow {
+		width: 31%;
+		height: auto;
+		opacity: 0.5;
+		position: absolute;
+		bottom: -2%;
+		left: 50%;
+		-ms-transform: translateX(-50%);
+		-webkit-transform: translateX(-50%);
+		transform: translateX(-50%);
+		z-index: 5;
+	}
 
 	.base {
 		width: 100%;
