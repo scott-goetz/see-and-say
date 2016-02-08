@@ -1,5 +1,6 @@
 node_modules
 
+.dist
 src/css/*.min.css
 src/js/vendor/*/*
 src/js/*.min.js

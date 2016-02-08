@@ -7,6 +7,7 @@ var del = require('del');
 
 gulp.task('clean', function () {
 	return del([
+		'.dist',
 		'css/*.min.css',
 		'js/*.min.js'
 	]);

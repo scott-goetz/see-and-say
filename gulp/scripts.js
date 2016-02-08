@@ -18,7 +18,7 @@ gulp.task('scripts', function () {
 
 		var pipeline = gulp.src(currScripts)
 			.pipe($.concat(i + '.js'))
-			// .pipe($.uglify({ preserveComments: 'license' }))
+			.pipe($.uglify({ preserveComments: 'license' }))
 			.pipe($.rename({ suffix: '.min' }))
 			.pipe(gulp.dest('src/js/'));
 

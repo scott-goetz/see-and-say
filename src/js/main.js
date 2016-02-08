@@ -235,7 +235,9 @@ function audioUpdate (failure) {
 	}
 
 	// Play audio track
-	var audioInstance = createjs.Sound.play(audioFile);
+	var audioInstance = createjs.Sound.play(audioFile, {
+		pan: 0.1
+	});
 
 	// Update audio duration and determine arrow spin time
 	audioDuration = audioInstance.duration / 1000;
